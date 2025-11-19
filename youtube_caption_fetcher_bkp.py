@@ -65,48 +65,6 @@ def get_youtube_captions(url, languages=['en', 'en-US', 'en-GB']):
     print(f"🎬 Fetching captions for video ID: {video_id}")
     
     try:
-        # Try DIRECT method first (more reliable)
-        print(f"   Trying direct caption fetch...")
-        try:
-            # Method 1: Direct fetch (fastest)
-            caption_data = YouTubeTranscriptApi.get_transcript(video_id, languages=['en', 'en-US', 'en-GB'])
-            
-            # Build result
-            full_text = []
-            segments = []
-            
-            for entry in caption_data:
-                text = entry['text']
-                start = entry['start']
-                duration = entry.get('duration', 0)
-                
-                full_text.append(text)
-                segments.append({
-                    'start': start,
-                    'end': start + duration,
-                    'text': text
-                })
-            
-            combined_text = ' '.join(full_text)
-            total_duration = segments[-1]['end'] if segments else 0
-            
-            print(f"✅ Direct fetch successful!")
-            
-            return {
-                'success': True,
-                'text': combined_text,
-                'segments': segments,
-                'duration': total_duration,
-                'language': 'en',
-                'auto_generated': True,  # Assume auto-generated
-                'video_id': video_id
-            }
-        
-        except:
-            # Method 2: List transcripts first (fallback)
-            print(f"   Direct fetch failed, trying list method...")
-            pass
-        
         # Try to get transcript
         # This library uses YouTube's official caption API endpoints
         transcript_list = YouTubeTranscriptApi.list_transcripts(video_id)
@@ -212,11 +170,6 @@ def get_youtube_captions(url, languages=['en', 'en-US', 'en-GB']):
     except Exception as e:
         error_msg = str(e)
         
-        # Print full error for debugging
-        print(f"⚠️ Full error: {error_msg}")
-        import traceback
-        print(f"⚠️ Traceback: {traceback.format_exc()}")
-        
         if 'private' in error_msg.lower():
             return {
                 'success': False,
@@ -228,12 +181,6 @@ def get_youtube_captions(url, languages=['en', 'en-US', 'en-GB']):
                 'success': False,
                 'error': 'unavailable',
                 'message': '❌ Video not found or has been deleted.'
-            }
-        elif 'xml' in error_msg.lower() or 'element' in error_msg.lower():
-            return {
-                'success': False,
-                'error': 'network_issue',
-                'message': f'❌ Network or region restriction detected.\n\n💡 Possible fixes:\n• Try a different video\n• Check your internet connection\n• Use a VPN if YouTube is restricted\n• Or use Tab 1 to upload audio manually\n\nTechnical: {error_msg}'
             }
         else:
             return {
