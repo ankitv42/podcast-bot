@@ -20,7 +20,10 @@ from generate_mom import generate_mom
 from email_service import send_mom_email
 
 # Import new YouTube caption module
-from youtube_caption_fetcher import get_youtube_captions, extract_video_id, clean_caption_text_gpt4
+#from youtube_caption_fetcher import get_youtube_captions, extract_video_id, clean_caption_text_gpt4
+#from youtube_caption_fetcher import get_youtube_captions, extract_video_id, clean_caption_text_gpt4
+# Import new YouTube caption module (using timedtext API)
+from youtube_timedtext_fetcher import get_youtube_captions_direct as get_youtube_captions, extract_video_id
 from openai import OpenAI
 
 # OpenAI client for caption cleanup
@@ -219,12 +222,32 @@ def process_youtube_captions(youtube_url, meeting_title, clean_captions=True):
         
         # Step 2: Clean captions (if auto-generated)
         transcript_text = caption_result['text']
-        
+
         if clean_captions and caption_result.get('auto_generated', False):
             st.info("🧹 Step 2/4: Cleaning auto-generated captions with GPT-4...")
             status_text.text("Fixing transcription errors...")
             
-            transcript_text = clean_caption_text_gpt4(transcript_text, openai_client)
+            # Clean captions using GPT-4
+            try:
+                response = openai_client.chat.completions.create(
+                    model="gpt-4o-mini",
+                    messages=[
+                        {
+                            "role": "system",
+                            "content": "You are a transcript editor. Fix transcription errors, add proper punctuation, and break into paragraphs. Preserve all original meaning and content."
+                        },
+                        {
+                            "role": "user",
+                            "content": f"Fix this auto-generated transcript:\n\n{transcript_text[:8000]}"
+                        }
+                    ],
+                    temperature=0.3
+                )
+                transcript_text = response.choices[0].message.content
+                print("✅ Caption cleaning complete")
+            except Exception as e:
+                print(f"⚠️ Caption cleaning failed: {e}")
+                print("   Using original captions")
             
             progress_bar.progress(50)
             status_text.text("✅ Captions cleaned!")
