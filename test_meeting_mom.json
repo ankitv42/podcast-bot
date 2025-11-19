@@ -1,0 +1,34 @@
+{
+  "summary": "The meeting provided a tutorial on how to test your webcam and microphone in Zoom. It outlined the steps to join a test meeting and check the functionality of the camera, speakers, and microphone.",
+  "key_points": [
+    "Instructions to join a fake meeting on Zoom for testing purposes.",
+    "How to check and change the camera settings.",
+    "Testing speakers and microphone, including output options.",
+    "Ending the test meeting and its automatic closure."
+  ],
+  "decisions": [],
+  "action_items": [
+    {
+      "task": "Download and install Zoom if not already done.",
+      "owner": "Unassigned",
+      "deadline": "Not specified",
+      "priority": "high"
+    },
+    {
+      "task": "Visit zoom.com/test to join a test meeting.",
+      "owner": "Unassigned",
+      "deadline": "Not specified",
+      "priority": "high"
+    }
+  ],
+  "questions": [],
+  "next_steps": "Participants should test their webcam and microphone using the provided instructions before their next meeting.",
+  "attendees": [],
+  "metadata": {
+    "generated_at": "2025-11-02T14:21:00.335818",
+    "transcript_file": "test_meeting_transcript.json",
+    "model_used": "gpt-4o-mini",
+    "transcript_length": 1458,
+    "duration": 90.87999725341797
+  }
+}
